@@ -1,0 +1,26 @@
+{
+  "name": "thronewars",
+  "version": "0.0.1",
+  "description": "NodeJs interface to the game ThroneWars",
+  "main": "index.js",
+  "dependencies": {
+    "q": "~1.0.0",
+    "request": "~2.34.0",
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "thronewars",
+    "throne wars",
+    "game"
+  ],
+  "author": "Josh Strange",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshstrange/node-thronewars.git"
+  }
+}
