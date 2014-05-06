@@ -136,6 +136,90 @@ function ThroneWars(userId, username, password, server) {
 		}
 	}
 
+	instance.getFunction = function(functionName) {
+		var functionText = "";
+		instance.model.functiontype.forEach(function(item){
+			if(item.id == functionName) {
+				functionText = item.description;
+			}
+		});
+		functionText = functionText.split(';')[0].replace('xt', 'x').replace('log', 'Math.log')
+		var pos = functionText.indexOf('^');
+		if(pos != -1) {
+			var start = functionText.substr(0,pos-1)+'Math.pow('+functionText.substr(pos-1,1)+',';
+			if(functionText.substr(pos+1,1) == '(') {
+				var pointer = pos+2;
+				while(functionText.substr(pointer,1) != ')') {
+					pointer++;
+				}
+				functionText = start + functionText.substr(pos+1,pointer-pos+1)+ ')'+functionText.substr(pointer);
+			} else {
+				functionText = start + functionText.substr(pos+1,1)+ ')'+functionText.substr(pos+2);
+			}
+		}
+		return functionText;
+	};
+
+	instance.execFunction = function(functionName, variables) {
+		var codeToRun = [];
+		for(key in variables) {
+			if(typeof variables[key] == 'number') {
+				codeToRun.push('var '+key+' ='+variables[key]+';');
+			}
+		}
+		codeToRun.push('var result = Math.ceil('+instance.getFunction(functionName)+');');
+		eval(codeToRun.join(''));
+		return result;
+	};
+
+	instance.getBuilding = function(buidlingName) {
+		var building = false;
+		instance.model.building.forEach(function(item){
+			if(item.id == buidlingName) {
+				building = item;
+			}
+		});
+		return building;
+	};
+
+	/* building.cost format
+	 [
+		 {
+			 A: 400,
+			 funcType: "exponential",
+			 resource: "iron",
+			 B: 1.55
+		 },
+		 {
+			 A: 250,
+			 funcType: "exponential",
+			 resource: "stone",
+			 B: 1.55
+		 },
+		 {
+			 A: 400,
+			 funcType: "exponential",
+			 resource: "wood",
+			 B: 1.68
+		 }
+	 ],
+	 */
+	instance.getCosts = function(buildingName, level) {
+		var building = instance.getBuilding(buildingName);
+		var cost = {};
+		building.costs.forEach(function(item) {
+			cost[item.resource] = instance.execFunction(item.funcType, _.extend({ x: level}, item));
+		});
+		return cost;
+	};
+
+	instance.getBuildTimeInSeconds = function(buildingName, level) {
+		var building = instance.getBuilding(buildingName);
+
+		var seconds = instance.execFunction(building.buildTime.funcType, _.extend({ x: level}, building.buildTime));
+		return seconds;
+	};
+
 	instance.register = function() {
 		return instance.fetch(instance.endpoints.Register).then(function(){
 			return instance.fetch(instance.endpoints.Login);
@@ -490,8 +574,7 @@ function ThroneWars(userId, username, password, server) {
 
 	instance.loadAll = function() {
 		return Q.all([
-			instance.get('Clan'),
-			instance.get('Model')
+			instance.get('Clan')
 		]);
 	};
 
@@ -509,9 +592,11 @@ function ThroneWars(userId, username, password, server) {
 		return result;
 	};
 
-	instance.login = function () {
+	instance.login = function() {
 		return instance.fetch(instance.endpoints.TSID).then(function () {
 			return instance.fetch(instance.endpoints.Login);
+		}).then(function() {
+			return instance.fetch(instance.endpoints.Model);
 		});
 	}();
 

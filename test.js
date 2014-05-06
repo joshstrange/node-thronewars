@@ -15,11 +15,25 @@ var myThroneWars = new ThroneWars(userId, username, password, server);
 
 
 myThroneWars.login.then(function(){
+	/*console.log(myThroneWars.getFunction('exponential_flat'));
+	console.log(myThroneWars.execFunction('exponential_flat', {
+		A: 300,
+		C: -319,
+		B: 1.51,
+		T: 14,
+		A2: 1.8,
+		B2: 0.93,
+		C2: -0.64,
+		x: 4
+	}));*/
+	console.log(myThroneWars.getCosts('castle', 4));
+	console.log(myThroneWars.getBuildTimeInSeconds('castle', 4));
+
 	//return myThroneWars.get('Bookmark');
-	return myThroneWars.getMapData(50, 50);
+	//return myThroneWars.getMapData(50, 50);
 	//console.log('here');
-}).then(function(resp){
-	console.log(resp);
-	console.log(JSON.stringify(myThroneWars.getMapArray()));
-});
+});/*.then(function(resp){
+	//console.log(resp);
+	//console.log(JSON.stringify(myThroneWars.getMapArray()));
+});*/
 //myThroneWars.finishBuilding(name, townId);
