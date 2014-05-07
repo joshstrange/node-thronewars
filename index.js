@@ -131,7 +131,7 @@ function ThroneWars(userId, username, password, server) {
 			}
 		},
 		Town: {
-			url: '/town/{townId}',
+			url: '/reports/{townId}',
 			data: {				
 				_reqId: null
 			}
