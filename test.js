@@ -15,6 +15,11 @@ var myThroneWars = new ThroneWars(userId, username, password, server);
 
 
 myThroneWars.login.then(function(){
+	return myThroneWars.fetch(myThroneWars.endpoints.Report ,{
+		townId: '51efdf004671a65833021e9b'
+	});//myThroneWars.buildBuilding('castle', "51efeb144671a6583303a84a");
+
+	//console.log(JSON.stringify(myThroneWars));
 	/*console.log(myThroneWars.getFunction('exponential_flat'));
 	console.log(myThroneWars.execFunction('exponential_flat', {
 		A: 300,
@@ -26,14 +31,16 @@ myThroneWars.login.then(function(){
 		C2: -0.64,
 		x: 4
 	}));*/
-	console.log(myThroneWars.getCosts('castle', 4));
-	console.log(myThroneWars.getBuildTimeInSeconds('castle', 4));
+	//console.log(myThroneWars.getCosts('castle', 4));
+	//console.log(myThroneWars.getBuildTimeInSeconds('castle', 4));
 
 	//return myThroneWars.get('Bookmark');
 	//return myThroneWars.getMapData(50, 50);
 	//console.log('here');
-});/*.then(function(resp){
+}).then(function(resp){
+	console.log("%j", resp);
+	//console.log(resp);
 	//console.log(resp);
 	//console.log(JSON.stringify(myThroneWars.getMapArray()));
-});*/
+});
 //myThroneWars.finishBuilding(name, townId);

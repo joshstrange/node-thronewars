@@ -119,6 +119,13 @@ function ThroneWars(userId, username, password, server) {
 				_reqId: null
 			}
 		},
+		Report: {
+			url: '/reports/{townId}',
+			data: {
+				time: (new Date()).getTime(),
+				_reqId: null
+			}
+		},
 		SendMail: {
 			url: '/send/message/{townId}',
 			data: {
@@ -172,14 +179,25 @@ function ThroneWars(userId, username, password, server) {
 		return result;
 	};
 
-	instance.getBuilding = function(buidlingName) {
-		var building = false;
-		instance.model.building.forEach(function(item){
-			if(item.id == buidlingName) {
-				building = item;
+	instance.getInArray = function(itemArray, id, idName) {
+		if(!idName) {
+			idName = 'id';
+		}
+		var returnItem = false;
+		itemArray.forEach(function(item){
+			if(item[idName] == id) {
+				returnItem = _.cloneDeep(item);
 			}
 		});
-		return building;
+		return returnItem;
+	};
+
+	instance.get = function(type, id) {
+		return instance.getInArray(instance.model[type], id);
+	};
+
+	instance.getBuilding = function(buidlingName) {
+		return instance.get('building', buidlingName);
 	};
 
 	/* building.cost format
@@ -204,7 +222,7 @@ function ThroneWars(userId, username, password, server) {
 		 }
 	 ],
 	 */
-	instance.getCosts = function(buildingName, level) {
+	instance.getBuildingCosts = function(buildingName, level) {
 		var building = instance.getBuilding(buildingName);
 		var cost = {};
 		building.costs.forEach(function(item) {
@@ -213,11 +231,86 @@ function ThroneWars(userId, username, password, server) {
 		return cost;
 	};
 
+	//Upgraded Farm to 5 and can't upgrade past that till I bring castle to 6
+	//Upgraded Farm to
+
+	instance.getBuildingRequirements = function(buildingName, level) {
+		var building = instance.getBuilding(buildingName);
+		var requirements = {
+			technology: [],
+			building: []
+		};
+		if(!_.isUndefined(building.requiredTechnology)) {
+			if(_.isObject(building.requiredTechnologyLevel)) {
+				requirements.technology[building.requiredTechnology] = instance.execFunction(building.requiredTechnologyLevel.funcType, _.extend({ x: level}, building.requiredTechnologyLevel));
+			} else {
+				//Must just be the level we need
+				requirements.technology[building.requiredTechnology] = building.requiredTechnologyLevel;
+			}
+		}
+		/*{
+			"id": "storage_building_unlock",
+			"default": 0,
+			"steps": [
+			{
+				"index": 1,
+				"value": 1
+			},
+			{
+				"index": 6,
+				"value": 5
+			},
+			{
+				"index": 8,
+				"value": 7
+			},
+			{
+				"index": 10,
+				"value": 9
+			}
+		]
+		},*/
+		if(!_.isUndefined(building.requiredBuilding)) {
+			if(_.isObject(building.requiredTechnologyLevel)) {
+				requirements.technology[building.requiredTechnology] = instance.execFunction(building.requiredTechnologyLevel.funcType, _.extend({ x: level}, building.requiredTechnologyLevel));
+			} else {
+				//Must just be the level we need
+				requirements.technology[building.requiredTechnology] = building.requiredTechnologyLevel;
+			}
+		}
+
+	};
+
 	instance.getBuildTimeInSeconds = function(buildingName, level) {
 		var building = instance.getBuilding(buildingName);
 
 		var seconds = instance.execFunction(building.buildTime.funcType, _.extend({ x: level}, building.buildTime));
 		return seconds;
+	};
+
+	//This will probably not work if you us gems to build more than one thing at a time
+	//I don't know what the build_queue will look in that case
+	instance.isBuilding = function(townId) {
+		return instance.get('towns', townId).build_queue.length == 1;
+	};
+
+	instance.canBuild = function(townId, buildingName) {
+		if(instance.isBuilding(townId)) {
+			return false;
+		}
+		var town = instance.towns[townId];
+		var level = instance.getInArray(town.buildings, buildingName, 'building').level + 1;
+		var costs = instance.getBuildingCosts(buildingName, level);
+		var canAfford = true;
+		for(resourceType in costs) {
+			if(costs[resourceType] > town.resources[resourceType]) {
+				canAfford = false
+			}
+		}
+		var hasTech = true;
+
+
+		return canAfford && hasTech;
 	};
 
 	instance.register = function() {
@@ -485,7 +578,7 @@ function ThroneWars(userId, username, password, server) {
 					instance.parseUser();
 					break;
 				case 'userServers':
-					instance.userServers = item;
+					instance.userServers = item.userServers;
 					break;
 				case 'town':
 					instance.towns[item.id] = item;
@@ -572,14 +665,9 @@ function ThroneWars(userId, username, password, server) {
 	};
 
 
-	instance.loadAll = function() {
-		return Q.all([
-			instance.get('Clan')
-		]);
-	};
-
-
-	instance.get = function (endpoint) {
+	//I don't like this name but I'm not sure what else to call it
+	//It may not even really be needed but I didn't want to delete it outright
+	instance.safeFetch = function (endpoint) {
 		return instance.login.then(function () {
 			return instance.fetch(instance.endpoints[endpoint]);
 		});
@@ -592,13 +680,11 @@ function ThroneWars(userId, username, password, server) {
 		return result;
 	};
 
-	instance.login = function() {
-		return instance.fetch(instance.endpoints.TSID).then(function () {
-			return instance.fetch(instance.endpoints.Login);
-		}).then(function() {
-			return instance.fetch(instance.endpoints.Model);
-		});
-	}();
+	instance.login = instance.fetch(instance.endpoints.TSID).then(function () {
+		return instance.fetch(instance.endpoints.Login);
+	}).then(function() {
+		return instance.fetch(instance.endpoints.Model);
+	});
 
 	return instance;
 }
