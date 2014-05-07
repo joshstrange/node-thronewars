@@ -5,7 +5,7 @@ var _ = require('lodash');
 
 function ThroneWars(userId, username, password, server) {
 	var instance = this;
-	instance.version = "1.3.0";
+	instance.version = "1.3.1";
 	instance.language = "en";
 	instance.userId = userId;
 	instance.username = username;
@@ -82,9 +82,6 @@ function ThroneWars(userId, username, password, server) {
 			url: '/clan/get/{clanId}',
 			data: {
 				_reqId: null
-			},
-			callback: function(data) {
-				instance.parseData(data);
 			}
 		},
 		Build: {
@@ -103,9 +100,6 @@ function ThroneWars(userId, username, password, server) {
 			url: '/bookmark/get',
 			data: {
 				_reqId: null
-			},
-			callback: function(data) {
-				instance.bookmarks = data._ret[0].bookmarks;
 			}
 		},
 		Map: {
@@ -179,21 +173,13 @@ function ThroneWars(userId, username, password, server) {
 		return result;
 	};
 
-	instance.getInArray = function(itemArray, id, idName) {
+	instance.get = function(type, id, idName) {
 		if(!idName) {
 			idName = 'id';
 		}
-		var returnItem = false;
-		itemArray.forEach(function(item){
-			if(item[idName] == id) {
-				returnItem = _.cloneDeep(item);
-			}
-		});
-		return returnItem;
-	};
-
-	instance.get = function(type, id) {
-		return instance.getInArray(instance.model[type], id);
+		var searchPattern = {};
+		searchPattern[idName] = id;
+		return _.find(instance.model[type], searchPattern);
 	};
 
 	instance.getBuilding = function(buidlingName) {
@@ -299,7 +285,7 @@ function ThroneWars(userId, username, password, server) {
 			return false;
 		}
 		var town = instance.towns[townId];
-		var level = instance.getInArray(town.buildings, buildingName, 'building').level + 1;
+		var level = _.find(town.buildings, {building: buildingName}).level + 1;
 		var costs = instance.getBuildingCosts(buildingName, level);
 		var canAfford = true;
 		for(resourceType in costs) {
