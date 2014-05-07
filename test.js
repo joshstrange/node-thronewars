@@ -47,6 +47,8 @@ myThroneWars.login.then(function(){
 
 	console.log("Session id: " + myThroneWars.sessionId);
 	var listing = {};
+
+	fs.appendFile('info.csv', "Cardinal,X,Y,City Name,Player Name,Clan Rank,Level,Militia,Infantry,Archers,Cavalry,Catapults,Carts,PlayerID,CityID\n");
 	
 	myThroneWars.getClan(turksClanID).then(function(){
 		myThroneWars.clan.memberList.forEach(function(user){
@@ -93,8 +95,8 @@ myThroneWars.login.then(function(){
 					if(weapons.catapult == undefined) weapons.catapult = 0;
 					if(weapons.cart == 0) weapons.cart = 0;
 
-					console.log(prefix + ":" + y + "," + x + " (" + myThroneWars.towns[town].name + ")\t\t" + username + "," + clanrole + "," + level + " Militia: " + weapons.militia + " infantry: " + weapons.infantry + " archers: " + weapons.bowmen + " cavalry: " + weapons.cavlery + " catapults: " + weapons.catapult + " carts: " + weapons.cart);
-					fs.appendFile('messages.txt', prefix + ":" + y + "," + x + " (" + myThroneWars.towns[town].name + ")\t\t" + username + "," + clanrole + "," + level + " Militia: " + weapons.militia + " infantry: " + weapons.infantry + " archers: " + weapons.bowmen + " cavalry: " + weapons.cavlery + " catapults: " + weapons.catapult + " carts: " + weapons.cart + "\n");
+					console.log(prefix + "," + y + "," + x + "," + myThroneWars.towns[town].name + "," + username + "," + clanrole + "," + level + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.cavlery + "," + weapons.catapult + "," + weapons.cart);
+					fs.appendFile('info.csv', prefix + "," + y + "," + x + "," + myThroneWars.towns[town].name + "," + username + "," + clanrole + "," + level + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.cavlery + "," + weapons.catapult + "," + weapons.cart + "," + user.userid + "," + town + "\n");
 				});
 			});
 		});		
