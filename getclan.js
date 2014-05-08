@@ -19,7 +19,8 @@ var myThroneWars = new ThroneWars(userId, username, password, server);
 
 //var joshsClanId = "5331d3142257a06b54007e6b";
 var turksClanID = "52f4f599489d3c8102000191";
-
+var loocaClanID = "52f4edeb17fb83056a00006f";
+var snowClanID = "52f4f4cd35f90d0d6a000125";
 
 myThroneWars.login.then(function(){
 	var listing = {};
@@ -28,7 +29,7 @@ myThroneWars.login.then(function(){
 		fs.appendFile('clan.csv', "Cardinal,X,Y,City Name,Player Name,Clan Rank,Level,Militia,Infantry,Archers,Cavalry,Catapults,Carts,PlayerID,CityID\n");
 	});
 
-	myThroneWars.getClan(turksClanID).then(function(){
+	myThroneWars.getClan(loocaClanID).then(function(){
 		myThroneWars.clan.memberList.forEach(function(user){
 			var username = user.username;
 			var clanrole = user.clanrole;
