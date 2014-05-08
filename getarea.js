@@ -19,10 +19,10 @@ var myThroneWars = new ThroneWars(userId, username, password, server);
 myThroneWars.login.then(function(){	
 	
 	fs.unlink('map.csv', function(){
-		fs.appendFile('map.csv', "Cardinal,X,Y,Username,Clan Tag,ClanID,UserID\n");
+		fs.appendFile('map.csv', "Cardinal,X,Y,Username,Clan Tag,ClanID,UserID,Town,TownID\n");
 	});
 	
-	myThroneWars.getMapData(73, 64, "NW").then(function(){
+	myThroneWars.getMapData(30, 57, "SE").then(function(){
 		console.log(myThroneWars.mapRange);
 
 	
@@ -48,8 +48,8 @@ myThroneWars.login.then(function(){
 						prefix = "NE";
 					}
 					
-					console.log(prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid);
-					fs.appendFile('map.csv', prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "\n");
+					console.log(prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name + "," + map[i][j].id);
+					fs.appendFile('map.csv', prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name   + "," + map[i][j].id + "\n");
 				}
 			}
 		}

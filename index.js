@@ -136,6 +136,12 @@ function ThroneWars(userId, username, password, server) {
 			data: {				
 				_reqId: null
 			}
+		},
+		Travels: {
+			url: '/travels/{townId}',
+			data: {
+				_reqId: null
+			}
 		}
 	};
 	//Attach base URL + session segment if needed

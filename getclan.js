@@ -29,7 +29,7 @@ myThroneWars.login.then(function(){
 		fs.appendFile('clan.csv', "Cardinal,X,Y,City Name,Player Name,Clan Rank,Level,Militia,Infantry,Archers,Cavalry,Catapults,Carts,PlayerID,CityID\n");
 	});
 
-	myThroneWars.getClan(loocaClanID).then(function(){
+	myThroneWars.getClan(snowClanID).then(function(){
 		myThroneWars.clan.memberList.forEach(function(user){
 			var username = user.username;
 			var clanrole = user.clanrole;
