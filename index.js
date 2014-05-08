@@ -448,6 +448,24 @@ function ThroneWars(userId) {
 		return objectOrString;
 	};
 
+	instance.getRealXAndY = function(x, y, region) {
+		switch(region) {
+			case 'NE':
+				y= -y;
+				break
+			case 'SE':
+				//Both Positive
+				break
+			case 'SW':
+				x = -x;
+				break
+			case 'NW':
+				y= -y;
+				x = -x;
+				break
+		}
+		return {x: x, y:y};
+	};
 	/*
 		{ //Same as Empty
 			x: 60,
@@ -486,21 +504,9 @@ function ThroneWars(userId) {
 	instance.getMapData = function(x, y, region) {
 		//If we don't pass in region assume we are entering real coords
 		if(region) {
-			switch(region) {
-				case 'NE':
-					y= -y;
-					break
-				case 'SE':
-					//Both Positive
-					break
-				case 'SW':
-					x = -x;
-					break
-				case 'NW':
-					y= -y;
-					x = -x;
-					break
-			}
+			var newCords = instance.getRealXAndY(x, y, region);
+			x = newCords.x;
+			y = newCords.y;
 		}
 		return instance.fetch(instance.endpoints.Map, {
 			x: x,

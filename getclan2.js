@@ -16,8 +16,9 @@ var clanId = argv._[0];
 
 try {
 	var stream = fs.createWriteStream("./build/clan-"+clanId+".csv");
-	stream.once('open', function (fd) {
+	stream.once('open', function () {
 		//Feel free to re-use these creds, they belong to one of my (many) android emulators that I don't care about
+
 		//Server 12
 		var userId = '0b43fd0c-517a-4171-afbf-14f9b1d48653';
 
@@ -26,12 +27,9 @@ try {
 
 		var myThroneWars = new ThroneWars(userId);
 
-
 		//var joshsClanId = "5331d3142257a06b54007e6b";
 		//var russianClan = "531d790312dcd5316f0038ba";
 		//var turksClanID = "52f4f599489d3c8102000191";
-
-
 
 		stringifier.on('readable', function () {
 			while (row = stringifier.read()) {
@@ -80,13 +78,6 @@ try {
 							prefix = "NE";
 						}
 
-
-						/*listing.username.towns.push({
-						 prefix: prefix,
-						 x : x,
-						 y : y,
-						 name : name
-						 });*/
 						var weapons = myThroneWars.towns[town].weapons;
 
 						if (_.isUndefined(weapons.militia)) {
