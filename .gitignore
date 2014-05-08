@@ -11,7 +11,8 @@ lcov.info
 pids
 logs
 results
-build
+build/*
+!build/.gitkeep
 .grunt
 
 node_modules

@@ -3,14 +3,12 @@ var Q = require('q');
 var querystring = require('querystring');
 var _ = require('lodash');
 
-function ThroneWars(userId, username, password, server) {
+function ThroneWars(userId) {
 	var instance = this;
 	instance.version = "1.3.1";
 	instance.language = "en";
 	instance.userId = userId;
-	instance.username = username;
-	instance.password = password;
-	instance.server = server;
+
 	instance.rootURL = 'http://{server}.trackingflaregames.net';
 
 	instance.tsid = null;
@@ -29,8 +27,13 @@ function ThroneWars(userId, username, password, server) {
 
 	instance.map = {};
 	instance.mapRange = null;
-	
-	instance.towns = {};
+
+	var userData = require('./users/'+userId+'.js');
+	instance.username = userData.username;
+	instance.password = userData.password;
+	instance.server = userData.server;
+
+
 
 	instance.endpoints = {
 		Model: {
@@ -587,18 +590,18 @@ function ThroneWars(userId, username, password, server) {
 	}
 
 	instance.parseData = function(data) {
-		//Looks like 0..x-2 is town info
-		//x-1 is user info
-		//x is user server info
-		//They all contain a _type variable that is one of the following:
-		//town/user/userServers
-		
+		//Maybe we should return the data type we asked for here so that .then(function(dataYouWantedNotEverything
+		//We would have to pass a second param to parseData so it know which to return at the end... Needs more thought
 		try{
 			data._ret.forEach(function(item){
 				switch(item._type) {
 					case 'user':
-						instance.user = item;
-						instance.parseUser();
+						if(item.tsid.split('=')[1] == instance.userId) {
+							instance.user = item;
+							instance.parseUser();
+						}
+						//If not then the user is from one of reports/town calls and we don't want
+						//to knock out our real user
 						break;
 					case 'userServers':
 						instance.userServers = item.userServers;
@@ -713,7 +716,8 @@ function ThroneWars(userId, username, password, server) {
 		return result;
 	};
 
-	instance.login = instance.fetch(instance.endpoints.TSID).then(function () {
+
+	instance.login =  instance.fetch(instance.endpoints.TSID).then(function () {
 		return instance.fetch(instance.endpoints.Login);
 	}).then(function() {
 		return instance.fetch(instance.endpoints.Model);
