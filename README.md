@@ -1,56 +1,25 @@
-# SimpleBank
-## A very basic interface to fetch data from your Simple bank account using promises
+# node-thronewars
+## A library to interact with the Throne Wars servers
 
 
 ### Install
 
+*Not currently in the npm registry!*
+
 ````
-npm install simplebank
+npm install thronewars
 ````
 
 
 ### Example
 
 ````js
-var SimpleBank = require('simplebank');
+var ThroneWars = require('thronewars');
 
-var mySimple = Simplebank('username', 'password');
+var myThroneWars = ThroneWars('userId');
+// You also need to put a file in /users/{userId}.js with your username/password/server
 
-mySimple.getTransactions().then(function(transactions){
-	console.log(transactions);
-});
 ````
 
 ### Methods
 
-#### getBalances
-
-
-#### getCard
-
-
-#### getContacts
-
-
-#### getChats
-
-
-#### getGoals
-
-
-#### getLinkedAccounts
-
-
-#### getNextPayments
-
-
-#### getNotifications
-
-
-#### getTransactions
-
-
-#### getTransactionsFrom(unixtime)
-
-
-#### getTransfers
