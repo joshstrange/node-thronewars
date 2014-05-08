@@ -4,8 +4,18 @@ var fs = require('fs');
 var stringify = require('csv-stringify');
 stringifier = stringify();
 var Q = require('q');
+var argv = require('yargs').argv;
+
+if(argv._.length != 1) {
+	console.error("You must provide a Clan ID!");
+	console.error("Example: node getclan2.js {clanId}");
+	process.exit(1);
+}
+
+var clanId = argv._[0];
+
 try {
-	var stream = fs.createWriteStream("./build/clan.csv");
+	var stream = fs.createWriteStream("./build/clan-"+clanId+".csv");
 	stream.once('open', function (fd) {
 		//Feel free to re-use these creds, they belong to one of my (many) android emulators that I don't care about
 		//Server 12
@@ -17,9 +27,10 @@ try {
 		var myThroneWars = new ThroneWars(userId);
 
 
-		var joshsClanId = "5331d3142257a06b54007e6b";
-		var russianClan = "531d790312dcd5316f0038ba";
+		//var joshsClanId = "5331d3142257a06b54007e6b";
+		//var russianClan = "531d790312dcd5316f0038ba";
 		//var turksClanID = "52f4f599489d3c8102000191";
+
 
 
 		stringifier.on('readable', function () {
@@ -32,16 +43,14 @@ try {
 		});
 		stringifier.on('finish', function () {
 			stream.end();
+			console.log("File saved to: build/clan-"+clanId+".csv");
 		});
 
 		myThroneWars.login.then(function () {
 			console.log("Session id: " + myThroneWars.sessionId);
 			var headers = ['User ID', 'Username', 'Level', 'Clan Role', 'Town Name', 'Region', 'X', 'Y', 'Militia', 'Infantry', 'Bowmen', 'Cavlery', 'Catapult', 'Cart'];
 			stringifier.write(headers);
-
-			return myThroneWars.getClan(russianClan);
-
-
+			return myThroneWars.getClan(clanId);
 		}).then(function () {
 			var allPromises = [];
 			myThroneWars.clan.memberList.forEach(function (user) {
