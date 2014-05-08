@@ -595,7 +595,7 @@ function ThroneWars(userId, username, password, server) {
 						instance.parseUser();
 						break;
 					case 'userServers':
-						instance.userServers = item;
+						instance.userServers = item.userServers;
 						break;
 					case 'town':
 						instance.towns[item.id] = item;
