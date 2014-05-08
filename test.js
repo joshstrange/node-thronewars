@@ -22,6 +22,7 @@ try {
 
 
 		var joshsClanId = "5331d3142257a06b54007e6b";
+		var russianClan = "531d790312dcd5316f0038ba";
 		//var turksClanID = "52f4f599489d3c8102000191";
 
 
@@ -42,7 +43,7 @@ try {
 			var headers = ['User ID', 'Username', 'Level', 'Clan Role', 'Town Name', 'Region', 'X', 'Y', 'Militia', 'Infantry', 'Bowmen', 'Cavlery', 'Catapult', 'Cart'];
 			stringifier.write(headers);
 
-			return myThroneWars.getClan(joshsClanId);
+			return myThroneWars.getClan(russianClan);
 
 
 		}).then(function () {
