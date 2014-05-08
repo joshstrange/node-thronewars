@@ -29,6 +29,8 @@ function ThroneWars(userId, username, password, server) {
 
 	instance.map = {};
 	instance.mapRange = null;
+	
+	instance.towns = {};
 
 	instance.endpoints = {
 		Model: {
@@ -126,6 +128,12 @@ function ThroneWars(userId, username, password, server) {
 				message: '{message}',
 				time: 0,
 				touser: '{recipient}',
+				_reqId: null
+			}
+		},
+		Town: {
+			url: '/reports/{townId}',
+			data: {				
 				_reqId: null
 			}
 		}
@@ -535,6 +543,10 @@ function ThroneWars(userId, username, password, server) {
 		}
 	};
 
+	instance.getMap = function(){
+		return instance.map;
+	}
+	
 	instance.getMapArray = function() {
 		var map = [];
 		var yKeys = _.keys(instance.map);
@@ -550,6 +562,23 @@ function ThroneWars(userId, username, password, server) {
 		});
 		return map;
 	};
+	
+	//--------------Clans-------------//
+	instance.getClan = function(clanid){
+		return instance.fetch(instance.endpoints.Clan, {
+			clanId: clanid
+		});
+	}
+	
+	instance.getTown = function(townId){
+		return instance.fetch(instance.endpoints.Town, {
+			townId: townId
+		});
+	}
+	
+	instance.updateTown = function(townObj){
+		instance.towns[townObj.id] = townObj;
+	}
 
 	instance.parseData = function(data) {
 		//Looks like 0..x-2 is town info
@@ -557,40 +586,52 @@ function ThroneWars(userId, username, password, server) {
 		//x is user server info
 		//They all contain a _type variable that is one of the following:
 		//town/user/userServers
-		data._ret.forEach(function(item){
-			switch(item._type) {
-				case 'user':
-					instance.user = item;
-					instance.parseUser();
-					break;
-				case 'userServers':
-					instance.userServers = item.userServers;
-					break;
-				case 'town':
-					instance.towns[item.id] = item;
-					break;
-				case 'clan':
-					instance.clan = item;
-					break;
-				case 'bookmark':
-					instance.bookmarks = item.bookmarks;
-					break;
-				case 'model':
-					instance.model = item.model;
-					break;
-				case 'map':
-					if(instance.mapRange == null) {
-						instance.mapRange = {
-							xMin: item.x,
-							xMax: item.x,
-							yMin: item.y,
-							yMax: item.y
-						};
-					}
-					instance.updateMap(item.map);
-					break;
-			}
-		});
+		
+		try{
+			data._ret.forEach(function(item){
+				switch(item._type) {
+					case 'user':
+						instance.user = item;
+						instance.parseUser();
+						break;
+					case 'userServers':
+						instance.userServers = item;
+						break;
+					case 'town':
+						instance.towns[item.id] = item;
+						break;
+					case 'clan':
+						instance.clan = item;
+						break;
+					case 'bookmark':
+						instance.bookmarks = item.bookmarks;
+						break;
+					case 'model':
+						instance.model = item.model;
+						break;
+					case 'map':
+						if(instance.mapRange == null) {
+							instance.mapRange = {
+								xMin: item.x,
+								xMax: item.x,
+								yMin: item.y,
+								yMax: item.y
+							};
+						}
+						instance.updateMap(item.map);
+						break;
+					case 'othertown':
+						instance.updateTown(item);
+						break;
+					case 'otheruser':
+						//stub
+						break;
+				}
+			});
+		}catch(Error){
+			console.log("Error parsing data. ", Error);
+			console.log(data);
+		}
 	};
 
 	instance.parseUser = function() {

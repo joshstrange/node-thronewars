@@ -1,4 +1,6 @@
 var ThroneWars = require('./index.js');
+var _ = require('lodash');
+var fs = require('fs');
 
 //Feel free to re-use these creds, they belong to one of my (many) android emulators that I don't care about
 var userId = '0b43fd0c-517a-4171-afbf-14f9b1d48653';
@@ -17,10 +19,6 @@ var myThroneWars = new ThroneWars(userId, username, password, server);
 
 var joshsClanId = "5331d3142257a06b54007e6b";
 //var turksClanID = "52f4f599489d3c8102000191";
-
-/*myThroneWars.loadAll().spread(function(clan){
- console.log(clan);
- });*/
 
 
 myThroneWars.login.then(function(){
@@ -126,7 +124,7 @@ myThroneWars.login.then(function(){
 	//return myThroneWars.getMapData(50, 50);
 	//console.log('here');
 });/*.then(function(resp){
- //console.log(resp);
- //console.log(JSON.stringify(myThroneWars.getMapArray()));
- });*/
+	//console.log(resp);
+	//console.log(JSON.stringify(myThroneWars.getMapArray()));
+});*/
 //myThroneWars.finishBuilding(name, townId);
