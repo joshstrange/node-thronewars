@@ -51,7 +51,7 @@ try {
 			return myThroneWars.getClan(clanId);
 		}).then(function () {
 			var allPromises = [];
-			myThroneWars.clan.memberList.forEach(function (user) {
+			myThroneWars.clans[clanId].memberList.forEach(function (user) {
 				var userData = [user.userid, user.username, user.clanrole, user.level];
 				var townsPromise = [];
 				user.towns.forEach(function (town) {

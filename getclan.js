@@ -23,7 +23,7 @@ myThroneWars.login.then(function(){
 	});
 
 	myThroneWars.getClan(snowClanID).then(function(){
-		myThroneWars.clan.memberList.forEach(function(user){
+		myThroneWars.clans[snowClanID].memberList.forEach(function(user){
 			var username = user.username;
 			var clanrole = user.clanrole;
 			var level = user.level;

@@ -17,10 +17,12 @@ function ThroneWars(userId) {
 	instance.model = null;
 
 	instance.user = null;
+	instance.users = {};
 	instance.userServers = null;
 	instance.towns = {};
 	instance.clanId = null;
 	instance.clan = null;
+	instance.clans = {};
 	instance.bookmarks = [];
 
 	instance.playerUsername = null;
@@ -583,29 +585,40 @@ function ThroneWars(userId) {
 		return instance.fetch(instance.endpoints.Clan, {
 			clanId: clanid
 		});
-	}
+	};
 	
 	instance.getTown = function(townId){
 		return instance.fetch(instance.endpoints.Town, {
 			townId: townId
 		});
-	}
+	};
 	
 	instance.updateTown = function(townObj){
 		instance.towns[townObj.id] = townObj;
-	}
+	};
+
+
+
+	instance.getReport = function(townId){
+		return instance.fetch(instance.endpoints.Report, {
+			townId: townId
+		});
+	};
 
 	instance.parseData = function(data) {
 		//Maybe we should return the data type we asked for here so that .then(function(dataYouWantedNotEverything
 		//We would have to pass a second param to parseData so it know which to return at the end... Needs more thought
 		try{
 			data._ret.forEach(function(item){
+				//console.log(item);
 				switch(item._type) {
 					case 'user':
-						if(item.tsid.split('=')[1] == instance.userId) {
+						var userId =item.tsid.split('=')[1];
+						if(userId == instance.userId) {
 							instance.user = item;
 							instance.parseUser();
 						}
+						instance.users[userId] = item;
 						//If not then the user is from one of reports/town calls and we don't want
 						//to knock out our real user
 						break;
@@ -616,7 +629,13 @@ function ThroneWars(userId) {
 						instance.towns[item.id] = item;
 						break;
 					case 'clan':
-						instance.clan = item;
+						if(instance.user.clanid == item.id) {
+							instance.clan = item;
+						}
+						if((instance.clans[item.id] && item.memberList) || !instance.clans[item.id]) {
+							instance.clans[item.id] = item;
+						}
+						//
 						break;
 					case 'bookmark':
 						instance.bookmarks = item.bookmarks;
