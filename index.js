@@ -618,7 +618,7 @@ function ThroneWars(userId) {
 							instance.user = item;
 							instance.parseUser();
 						}
-						instance.users[userId] = item;
+						instance.users[item.username] = item;
 						//If not then the user is from one of reports/town calls and we don't want
 						//to knock out our real user
 						break;
