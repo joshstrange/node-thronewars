@@ -35,6 +35,9 @@ function ThroneWars(userId) {
 	instance.password = userData.password;
 	instance.server = userData.server;
 
+	instance.watchers = {
+
+	};
 
 
 	instance.endpoints = {
@@ -200,6 +203,7 @@ function ThroneWars(userId) {
 		searchPattern[idName] = id;
 		return _.find(instance.model[type], searchPattern);
 	};
+
 
 	instance.getBuilding = function(buidlingName) {
 		return instance.get('building', buidlingName);
@@ -521,10 +525,20 @@ function ThroneWars(userId) {
 		map.forEach(function(point){
 			instance.updateMapPoint(point);
 		});
-		instance.fillInEmptyMapPoints();
+		//Let's not do this anymore
+		//instance.fillInEmptyMapPoints();
 	};
 
 	instance.updateMapPoint = function(point) {
+		if(instance.mapRange == null) {
+			instance.mapRange = {
+				xMin: point.x,
+				xMax: point.x,
+				yMin: point.y,
+				yMax: point.y
+			};
+		}
+
 		//Update map range
 		if(instance.mapRange.xMin > point.x) {
 			instance.mapRange.xMin = point.x;
@@ -542,6 +556,16 @@ function ThroneWars(userId) {
 			instance.map[point.y] = {};
 		}
 		instance.map[point.y][point.x] = point;
+	};
+
+	/*
+		Take real x and y
+	 */
+	instance.pointInMapCache = function(x, y) {
+		return (instance.mapRange.xMin < x) &&
+			(instance.mapRange.xMax > x) &&
+			(instance.mapRange.yMin < y) &&
+			(instance.mapRange.yMax > y);
 	};
 
 	instance.fillInEmptyMapPoints = function() {
@@ -562,7 +586,7 @@ function ThroneWars(userId) {
 
 	instance.getMap = function(){
 		return instance.map;
-	}
+	};
 	
 	instance.getMapArray = function() {
 		var map = [];
@@ -615,10 +639,19 @@ function ThroneWars(userId) {
 					case 'user':
 						var userId =item.tsid.split('=')[1];
 						if(userId == instance.userId) {
-							instance.user = item;
+							if(instance.user == null) {
+								instance.user = {};
+							}
+							_.extend(instance.user, item);
 							instance.parseUser();
 						}
-						instance.users[item.username] = item;
+						if(_.isUndefined(instance.users[item.username])) {
+							instance.users[item.username] = {};
+						}
+						_.extend(instance.users[item.username], item);
+						if(!_.isUndefined(instance.watchers.user)) {
+							instance.watchers.user(instance.users[item.username]);
+						}
 						//If not then the user is from one of reports/town calls and we don't want
 						//to knock out our real user
 						break;
@@ -626,7 +659,13 @@ function ThroneWars(userId) {
 						instance.userServers = item.userServers;
 						break;
 					case 'town':
-						instance.towns[item.id] = item;
+						if(_.isUndefined(instance.towns[item.id])) {
+							instance.towns[item.id] = {};
+						}
+						_.extend(instance.towns[item.id], item);
+						if(!_.isUndefined(instance.watchers.town)) {
+							instance.watchers.town(instance.towns[item.id]);
+						}
 						break;
 					case 'clan':
 						if(instance.user.clanid == item.id) {
@@ -634,8 +673,10 @@ function ThroneWars(userId) {
 						}
 						if((instance.clans[item.id] && item.memberList) || !instance.clans[item.id]) {
 							instance.clans[item.id] = item;
+							if(!_.isUndefined(instance.watchers.clan)) {
+								instance.watchers.clan(instance.clans[item.id]);
+							}
 						}
-						//
 						break;
 					case 'bookmark':
 						instance.bookmarks = item.bookmarks;
@@ -652,9 +693,12 @@ function ThroneWars(userId) {
 								yMax: item.y
 							};
 						}
+						if(!_.isUndefined(instance.watchers.map)) {
+							instance.watchers.map(item.map);
+						}
 						instance.updateMap(item.map);
 						break;
-					case 'othertown':
+					case 'othertown': //Might not need these now as Report > Town
 						instance.updateTown(item);
 						break;
 					case 'otheruser':

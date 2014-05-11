@@ -27,8 +27,10 @@ try {
 		return myThroneWars.getMapData(x, y, region);
 	}).then(function(data){
 		var realCords = myThroneWars.getRealXAndY(y, x, region);
+		var found = false;
 		data._ret[0].map.forEach(function(location) {
 			if(location.x == realCords.x && location.y == realCords.y) {
+				found = true;
 				if(_.isUndefined(location.user.clanid)) {
 					console.log('User is not in a clan!');
 				} else {
@@ -36,8 +38,12 @@ try {
 				}
 			}
 		});
+		if(!found) {
+			console.log('User is not in that location!');
+		}
 		//console.log(JSON.stringify(data));
 	});
 } catch(ex) {
+	console.log("Error:");
 	console.log(ex);
 }
