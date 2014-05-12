@@ -378,10 +378,18 @@ function ThroneWars(userId) {
 		Woodcutter: woodcutter
 
 	 */
+
+	instance.buildWeapon = function(weapon, townId, count) {
+		return instance.build('weapon', weapon, townId, {
+			count: count
+		});
+	};
+
+
 	instance.buildBuilding = function(name, townId) {
 		return instance.build('building', name, townId, {
 			slot: instance.getBuildingSlot(name, townId)
-		})
+		});
 	};
 
 	instance.buildTechnology = function(name, townId) {
@@ -650,7 +658,7 @@ function ThroneWars(userId) {
 						}
 						_.extend(instance.users[item.username], item);
 						if(!_.isUndefined(instance.watchers.user)) {
-							instance.watchers.user(instance.users[item.username]);
+							instance.users[item.username] = instance.watchers.user(instance.users[item.username]);
 						}
 						//If not then the user is from one of reports/town calls and we don't want
 						//to knock out our real user
@@ -664,7 +672,7 @@ function ThroneWars(userId) {
 						}
 						_.extend(instance.towns[item.id], item);
 						if(!_.isUndefined(instance.watchers.town)) {
-							instance.watchers.town(instance.towns[item.id]);
+							instance.towns[item.id] = instance.watchers.town(instance.towns[item.id]);
 						}
 						break;
 					case 'clan':
@@ -674,7 +682,7 @@ function ThroneWars(userId) {
 						if((instance.clans[item.id] && item.memberList) || !instance.clans[item.id]) {
 							instance.clans[item.id] = item;
 							if(!_.isUndefined(instance.watchers.clan)) {
-								instance.watchers.clan(instance.clans[item.id]);
+								instance.clans[item.id] = instance.watchers.clan(instance.clans[item.id]);
 							}
 						}
 						break;
