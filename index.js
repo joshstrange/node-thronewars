@@ -150,6 +150,14 @@ function ThroneWars(userId) {
 			data: {
 				_reqId: null
 			}
+		},
+		DismissHero: {
+			url: '/hero/ban/{townId}',
+			data: {
+				_reqId: null,
+				xferxp: false, //Not sure what this is
+				heroid: '{heroId}'
+			}
 		}
 	};
 	//Attach base URL + session segment if needed
@@ -340,6 +348,14 @@ function ThroneWars(userId) {
 		}, {
 			message: message,
 			recipient: toHandle
+		});
+	};
+
+	instance.dismissHero = function(townId, heroId) {
+		return instance.fetch(instance.endpoints.DismissHero, {
+			townId: townId
+		}, {
+			heroId: heroId
 		});
 	};
 
