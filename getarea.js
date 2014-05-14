@@ -1,6 +1,7 @@
 var ThroneWars = require('./index.js');
 var _ = require('lodash');
 var fs = require('fs');
+var argv = require('yargs').argv;
 
 //Feel free to re-use these creds, they belong to one of my (many) android emulators that I don't care about
 //Server 12
@@ -16,11 +17,21 @@ var myThroneWars = new ThroneWars(userId);
 
 myThroneWars.login.then(function(){	
 	
-	fs.unlink('map.csv', function(){
-		fs.appendFile('map.csv', "Cardinal,X,Y,Username,Clan Tag,ClanID,UserID,Town,TownID\n");
+	fs.unlink('./build/map.csv', function(){
+		fs.appendFile('./build/map.csv', "Cardinal,X,Y,Username,Clan Tag,ClanID,UserID,Town,TownID\n");
 	});
 	
-	myThroneWars.getMapData(30, 57, "SE").then(function(){
+	var x = 57;
+	var y = 30;
+	var ordinal = "SE";	
+	
+	if(argv._.length == 3) {
+		x = argv._[0];
+		y = argv._[1];
+		ordinal = argv._[2];
+	}
+	
+	myThroneWars.getMapData(y, x, ordinal).then(function(){
 		console.log(myThroneWars.mapRange);
 
 	
@@ -47,7 +58,7 @@ myThroneWars.login.then(function(){
 					}
 					
 					console.log(prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name + "," + map[i][j].id);
-					fs.appendFile('map.csv', prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name   + "," + map[i][j].id + "\n");
+					fs.appendFile('./build/map.csv', prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name   + "," + map[i][j].id + "\n");
 				}
 			}
 		}
