@@ -73,6 +73,7 @@ myThroneWars.login.then(function(){
 						x: coords.x,
 						y: coords.y,
 						userid: town.userid,
+						town: town.id,
 						sum: sum,
 						weapons: weapons
 					});
@@ -92,7 +93,7 @@ myThroneWars.login.then(function(){
 			
 			_.forEach(canidates, function(canidate){
 				var weapons = canidate.weapons;
-				console.log(canidate.ordinal + "," + canidate.x + "," + canidate.y + "," + canidate.userid + "," + canidate.sum + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.catapult + "," + weapons.cavlery);
+				console.log(canidate.ordinal + "," + canidate.x + "," + canidate.y + "," + canidate.userid + "," + canidate.town + "," + canidate.sum + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.catapult + "," + weapons.cavlery);
 			});
 		});
 		
