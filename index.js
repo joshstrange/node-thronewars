@@ -668,6 +668,25 @@ function ThroneWars(userId) {
 			townId: townId
 		});
 	};
+	
+	//--------------Players------------//
+	instance.getTravels = function(townId){
+		return instance.fetch(instance.endpoints.Travels, {
+			townId: townId
+		});
+	}
+	
+	//--------------Misc---------------//
+	instance.fixWeapons = function(weapons){	
+		if(weapons.militia == undefined) weapons.militia = 0;
+		if(weapons.infantry == undefined) weapons.infantry = 0;
+		if(weapons.bowmen == undefined) weapons.bowmen = 0;
+		if(weapons.cavlery == undefined) weapons.cavlery = 0;
+		if(weapons.catapult == undefined) weapons.catapult = 0;
+		if(weapons.cart == 0) weapons.cart = 0;
+		
+		return weapons;
+	}
 
 	instance.parseData = function(data) {
 		//Maybe we should return the data type we asked for here so that .then(function(dataYouWantedNotEverything

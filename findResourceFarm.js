@@ -34,6 +34,7 @@ myThroneWars.login.then(function(){
 	
 	myThroneWars.getMapData(y, x, ordinal).then(function(){
 		console.log(myThroneWars.mapRange);
+		console.log("Width: " + (myThroneWars.mapRange.xMax - myThroneWars.mapRange.xMin) + " Height: " + (myThroneWars.mapRange.yMax - myThroneWars.mapRange.yMin));
 
 	
 	 
@@ -45,21 +46,6 @@ myThroneWars.login.then(function(){
 					var town = map[i][j].id;
 					
 					getTownPromises.push(myThroneWars.getTown(town));
-				
-					/*myThroneWars.getTown(town).then(function(){					
-						var weapons = myThroneWars.towns[town].weapons;
-						if(weapons.militia == undefined) weapons.militia = 0;
-						if(weapons.cavlery == undefined) weapons.cavlery = 0;
-						if(weapons.catapult == undefined) weapons.catapult = 0;
-						if(weapons.cart == 0) weapons.cart = 0;
-						
-						console.log(myThroneWars.towns[town]);
-					});*/
-					
-					
-					//console.log(prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name + "," + map[i][j].id);
-
-					//fs.appendFile('./build/map.csv', prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name   + "," + map[i][j].id + "\n");
 				}
 			}
 		}
@@ -81,8 +67,6 @@ myThroneWars.login.then(function(){
 					if(weapons.cavlery == undefined) weapons.cavlery = 0;
 					if(weapons.catapult == undefined) weapons.catapult = 0;
 					if(weapons.cart == 0) weapons.cart = 0;
-				
-					//console.log(coords.ordinal + "," + coords.x + "," + coords.y + "," + town.userid + "," + sum + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.catapult + "," + weapons.cavlery);
 					
 					canidates.push({
 						ordinal: coords.ordinal,
@@ -94,10 +78,6 @@ myThroneWars.login.then(function(){
 					});
 				}
 			});
-			/*_.forEach(myThroneWars.users, function(user){
-				console.log(user);
-				console.log("");
-			});*/
 			
 			function compare(a,b) {
 			  if (a.sum < b.sum)
@@ -108,6 +88,8 @@ myThroneWars.login.then(function(){
 			}
 
 			canidates.sort(compare);
+			canidates.reverse();
+			
 			_.forEach(canidates, function(canidate){
 				var weapons = canidate.weapons;
 				console.log(canidate.ordinal + "," + canidate.x + "," + canidate.y + "," + canidate.userid + "," + canidate.sum + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.catapult + "," + weapons.cavlery);
