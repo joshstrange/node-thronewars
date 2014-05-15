@@ -496,6 +496,22 @@ function ThroneWars(userId) {
 		}
 		return {x: x, y:y};
 	};
+	instance.getFakeXAndY = function(x,y){	
+		var prefix = "SE";
+
+		if(x < 0 && y < 0){
+			x = -x;
+			y = -y;
+			prefix = "NW";
+		}else if(x < 0 && y >= 0){
+			x = -x;
+			prefix = "SW";
+		}else if(x >= 0 && y < 0){
+			y = -y;
+			prefix = "NE";
+		}
+		return {x: y, y: x, ordinal: prefix};
+	}
 	/*
 		{ //Same as Empty
 			x: 60,

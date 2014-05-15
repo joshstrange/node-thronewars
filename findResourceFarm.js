@@ -64,6 +64,7 @@ myThroneWars.login.then(function(){
 			}
 		}
 		Q.all(getTownPromises).then(function() {
+			var canidates = [];
 			_.forEach(myThroneWars.towns, function(town){
 				var sum = town.resources.iron + town.resources.stone + town.resources.wood;
 				
@@ -71,29 +72,46 @@ myThroneWars.login.then(function(){
 					var x = town.x;
 					var y = town.y;
 
-					var prefix = "SE";
-
-					if(x < 0 && y < 0){
-						x = -x;
-						y = -y;
-						prefix = "NW";
-					}else if(x < 0 && y >= 0){
-						x = -x;
-						prefix = "SW";
-					}else if(x >= 0 && y < 0){
-						y = -y;
-						prefix = "NE";
-					}
-				
-					//console.log(prefix + "," + y + "," + x + "," + map[i][j].user.username + "," + map[i][j].user.clantag + "," + map[i][j].user.clanid + "," + map[i][j].user.userid + "," + map[i][j].name + "," + map[i][j].id);
-					//console.log(town);
-					//console.log(" ");
-					console.log(prefix + "," + y + "," + x + "," + town.userid);
-					//console.log(myThroneWars.users[town.userid]);
+					var coords = myThroneWars.getFakeXAndY(x,y);
 					
+					var weapons = town.weapons;
+					if(weapons.militia == undefined) weapons.militia = 0;
+					if(weapons.infantry == undefined) weapons.infantry = 0;
+					if(weapons.bowmen == undefined) weapons.bowmen = 0;
+					if(weapons.cavlery == undefined) weapons.cavlery = 0;
+					if(weapons.catapult == undefined) weapons.catapult = 0;
+					if(weapons.cart == 0) weapons.cart = 0;
+				
+					//console.log(coords.ordinal + "," + coords.x + "," + coords.y + "," + town.userid + "," + sum + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.catapult + "," + weapons.cavlery);
+					
+					canidates.push({
+						ordinal: coords.ordinal,
+						x: coords.x,
+						y: coords.y,
+						userid: town.userid,
+						sum: sum,
+						weapons: weapons
+					});
 				}
 			});
-			console.log(myThroneWars.users);
+			/*_.forEach(myThroneWars.users, function(user){
+				console.log(user);
+				console.log("");
+			});*/
+			
+			function compare(a,b) {
+			  if (a.sum < b.sum)
+				 return -1;
+			  if (a.sum > b.sum)
+				return 1;
+			  return 0;
+			}
+
+			canidates.sort(compare);
+			_.forEach(canidates, function(canidate){
+				var weapons = canidate.weapons;
+				console.log(canidate.ordinal + "," + canidate.x + "," + canidate.y + "," + canidate.userid + "," + canidate.sum + "," + weapons.militia + "," + weapons.infantry + "," + weapons.bowmen + "," + weapons.catapult + "," + weapons.cavlery);
+			});
 		});
 		
 	});
