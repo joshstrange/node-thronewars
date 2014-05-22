@@ -3,6 +3,12 @@ var Q = require('q');
 var querystring = require('querystring');
 var _ = require('lodash');
 
+/*
+	You can pass in a userId here to load from file or just call "var myThroneWars = new ThroneWars()"
+	then call myThroneWars.newUser(serverNumber) to get a new user
+ */
+
+
 function ThroneWars(userId) {
 	var instance = this;
 	instance.version = "1.3.1";
@@ -30,10 +36,6 @@ function ThroneWars(userId) {
 	instance.map = {};
 	instance.mapRange = null;
 
-	var userData = require('./users/'+userId+'.js');
-	instance.username = userData.username;
-	instance.password = userData.password;
-	instance.server = userData.server;
 
 	instance.watchers = {
 
@@ -160,12 +162,15 @@ function ThroneWars(userId) {
 			}
 		}
 	};
-	//Attach base URL + session segment if needed
-	for(endpoint in instance.endpoints) {
-		if(instance.endpoints[endpoint].url.indexOf('http') == -1) {
-			instance.endpoints[endpoint].url = instance.rootURL + (endpoint != 'Login' ? '/{sessionId}' : '') + instance.endpoints[endpoint].url;
+	instance.createEndpoints = function() {
+		//Attach base URL + session segment if needed
+		for(endpoint in instance.endpoints) {
+			if(instance.endpoints[endpoint].url.indexOf('http') == -1) {
+				instance.endpoints[endpoint].url = instance.rootURL + (endpoint != 'Login' && endpoint != 'Register' ? '/{sessionId}' : '') + instance.endpoints[endpoint].url;
+			}
 		}
-	}
+	};
+
 
 	instance.getFunction = function(functionName) {
 		var functionText = "";
@@ -333,6 +338,8 @@ function ThroneWars(userId) {
 	instance.register = function() {
 		return instance.fetch(instance.endpoints.Register).then(function(){
 			return instance.fetch(instance.endpoints.Login);
+		}).then(function() {
+			return instance.fetch(instance.endpoints.Model);
 		});
 	};
 
@@ -482,17 +489,17 @@ function ThroneWars(userId) {
 		switch(region) {
 			case 'NE':
 				y= -y;
-				break
+				break;
 			case 'SE':
 				//Both Positive
-				break
+				break;
 			case 'SW':
 				x = -x;
-				break
+				break;
 			case 'NW':
 				y= -y;
 				x = -x;
-				break
+				break;
 		}
 		return {x: x, y:y};
 	};
@@ -640,6 +647,12 @@ function ThroneWars(userId) {
 			townId: townId
 		});
 	};
+
+	instance.getTravels = function(townId) {
+		return instance.fetch(instance.endpoints.Travels, {
+			townId: townId
+		});
+	};
 	
 	instance.updateTown = function(townObj){
 		instance.towns[townObj.id] = townObj;
@@ -695,11 +708,12 @@ function ThroneWars(userId) {
 						if(instance.user.clanid == item.id) {
 							instance.clan = item;
 						}
-						if((instance.clans[item.id] && item.memberList) || !instance.clans[item.id]) {
-							instance.clans[item.id] = item;
-							if(!_.isUndefined(instance.watchers.clan)) {
-								instance.clans[item.id] = instance.watchers.clan(instance.clans[item.id]);
-							}
+						if(_.isUndefined(instance.clans[item.id])) {
+							instance.clans[item.id] = {};
+						}
+						_.extend(instance.clans[item.id], item);
+						if(!_.isUndefined(instance.watchers.clan)) {
+							instance.clans[item.id] = instance.watchers.clan(instance.clans[item.id]);
 						}
 						break;
 					case 'bookmark':
@@ -809,12 +823,29 @@ function ThroneWars(userId) {
 		return result;
 	};
 
+	instance.loadUser = function() {
+		var userData = require('./users/'+instance.userId+'.js');
+		instance.username = userData.username;
+		instance.password = userData.password;
+		instance.server = userData.server;
+	};
 
-	instance.login =  instance.fetch(instance.endpoints.TSID).then(function () {
-		return instance.fetch(instance.endpoints.Login);
-	}).then(function() {
-		return instance.fetch(instance.endpoints.Model);
-	});
+	if(instance.userId) {
+		instance.loadUser();
+		instance.createEndpoints();
+		instance.login = instance.fetch(instance.endpoints.TSID).then(function () {
+			return instance.fetch(instance.endpoints.Login);
+		}).then(function() {
+			return instance.fetch(instance.endpoints.Model);
+		});
+	}
+
+	instance.newUser = function(serverNumber) {
+		instance.server = 'tw-us-vir-'+serverNumber;
+		instance.createEndpoints();
+		instance.login = instance.register();
+		return instance.login;
+	};
 
 	return instance;
 }

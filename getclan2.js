@@ -50,6 +50,8 @@ try {
 			stringifier.write(headers);
 			return myThroneWars.getClan(clanId);
 		}).then(function () {
+			console.log("got clan");
+			console.log(myThroneWars.clans);
 			var allPromises = [];
 			myThroneWars.clans[clanId].memberList.forEach(function (user) {
 				var userData = [user.userid, user.username, user.clanrole, user.level];
@@ -104,6 +106,9 @@ try {
 			Q.all(allPromises).then(function () {
 				stringifier.end();
 			});
+		}).catch(function(error){
+			console.log("Error:");
+			console.log(error);
 		});
 	});
 } catch(ex) {
