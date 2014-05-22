@@ -503,6 +503,22 @@ function ThroneWars(userId) {
 		}
 		return {x: x, y:y};
 	};
+	instance.getFakeXAndY = function(x,y){	
+		var prefix = "SE";
+
+		if(x < 0 && y < 0){
+			x = -x;
+			y = -y;
+			prefix = "NW";
+		}else if(x < 0 && y >= 0){
+			x = -x;
+			prefix = "SW";
+		}else if(x >= 0 && y < 0){
+			y = -y;
+			prefix = "NE";
+		}
+		return {x: y, y: x, ordinal: prefix};
+	}
 	/*
 		{ //Same as Empty
 			x: 60,
@@ -665,6 +681,25 @@ function ThroneWars(userId) {
 			townId: townId
 		});
 	};
+	
+	//--------------Players------------//
+	instance.getTravels = function(townId){
+		return instance.fetch(instance.endpoints.Travels, {
+			townId: townId
+		});
+	}
+	
+	//--------------Misc---------------//
+	instance.fixWeapons = function(weapons){	
+		if(weapons.militia == undefined) weapons.militia = 0;
+		if(weapons.infantry == undefined) weapons.infantry = 0;
+		if(weapons.bowmen == undefined) weapons.bowmen = 0;
+		if(weapons.cavlery == undefined) weapons.cavlery = 0;
+		if(weapons.catapult == undefined) weapons.catapult = 0;
+		if(weapons.cart == 0) weapons.cart = 0;
+		
+		return weapons;
+	}
 
 	instance.parseData = function(data) {
 		//Maybe we should return the data type we asked for here so that .then(function(dataYouWantedNotEverything

@@ -35,6 +35,7 @@ myThroneWars.login.then(function(){
 		console.log(myThroneWars.mapRange);
 
 	
+		console.log("Cardinal,X,Y,Username,Clan Tag,ClanID,UserID,Town,TownID");
 	 
 		var map = myThroneWars.getMapArray();
 		for(var i = 0; i < map.length; i++){
