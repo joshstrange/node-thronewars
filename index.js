@@ -141,6 +141,18 @@ function ThroneWars(userId) {
 				_reqId: null
 			}
 		},
+		SendGift: {
+			url: '/send/gift/{townId}',
+			data: {
+				totown: "{townId}",
+				_reqId: null,
+				weapons:{
+					cart: "{carts}"
+				},
+				"resources": "{resources}",
+				useitem: []
+			}
+		},
 		Town: {
 			url: '/reports/{townId}',
 			data: {				
@@ -355,6 +367,24 @@ function ThroneWars(userId) {
 		}, {
 			message: message,
 			recipient: toHandle
+		});
+	};
+
+	instance.sendResources = function(fromTownId, toTownId, resources, cartCapacity) {
+		if(!cartCapacity) {
+			cartCapacity = 5000;
+		}
+		var totalResources = 0;
+		for(resourceType in resources) {
+			totalResources = totalResources + resources[resourceType];
+		}
+		var carts = Math.ceil(totalResources/cartCapacity);
+		return instance.fetch(instance.endpoints.SendGift, {
+			townId: fromTownId
+		}, {
+			townId: toTownId,
+			resources: resources,
+			carts: carts
 		});
 	};
 
