@@ -104,7 +104,8 @@ try {
 				'Stone',
 				'Wood',
 				'Last Login',
-				'Last Login Timestamp'
+				'Last Login Timestamp',
+				'Town ID'
 			];
 			stringifier.write(headers);
 			//process.exit(1);
@@ -154,7 +155,8 @@ try {
 						'0', //Stone
 						'0', //Wood
 						'', //Last Login
-						'' //Last Login Timestamp
+						'', //Last Login Timestamp
+						'' //Town Id
 					];
 					if (!users[town.userid]) {
 						users[town.userid] = {
@@ -215,6 +217,7 @@ try {
 						data[11] = moment.unix(myThroneWars.users[users[town.userid].username].lastLogin).fromNow();
 						data[12] = myThroneWars.users[users[town.userid].username].lastLogin;
 					}
+					data[13] = town.id;
 					stringifier.write(data);
 					//console.log("");
 					//console.log("");

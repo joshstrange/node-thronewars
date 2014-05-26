@@ -24,6 +24,7 @@ function ThroneWars(userId) {
 
 	instance.user = null;
 	instance.users = {};
+	instance.usersById = {};
 	instance.userServers = null;
 	instance.towns = {};
 	instance.clanId = null;
@@ -44,9 +45,13 @@ function ThroneWars(userId) {
 
 	instance.endpoints = {
 		Model: {
-			url: 'http://{server}.trackingflaregames.net/lmodel/android/300/0/en/none/',
+			url: 'http://{server}.trackingflaregames.net/lmodel/ios/301/315/en/en/',
 			data: {},
-			method: 'GET'
+			method: 'GET',
+			callback: function (data) {
+				//console.log("Model callback");
+				//console.log(data._ret[0].client);
+			}
 		},
 		Register: {
 			url: 'http://fgauth.trackingflaregames.net/kingdoms/user/register',
@@ -149,7 +154,11 @@ function ThroneWars(userId) {
 				weapons:{
 					cart: "{carts}"
 				},
-				"resources": "{resources}",
+				"resources": {
+					stone: "{stone}",
+					wood: "{wood}",
+					iron: "{iron}"
+				},
 				useitem: []
 			}
 		},
@@ -372,18 +381,22 @@ function ThroneWars(userId) {
 
 	instance.sendResources = function(fromTownId, toTownId, resources, cartCapacity) {
 		if(!cartCapacity) {
-			cartCapacity = 5000;
+			cartCapacity = 500;
 		}
 		var totalResources = 0;
 		for(resourceType in resources) {
 			totalResources = totalResources + resources[resourceType];
 		}
+		//console.log("Total Resources: "+totalResources);
 		var carts = Math.ceil(totalResources/cartCapacity);
+		//console.log("Carts: "+carts);
 		return instance.fetch(instance.endpoints.SendGift, {
 			townId: fromTownId
 		}, {
 			townId: toTownId,
-			resources: resources,
+			stone: resources.stone,
+			wood: resources.wood,
+			iron: resources.iron,
 			carts: carts
 		});
 	};
@@ -751,6 +764,11 @@ function ThroneWars(userId) {
 							instance.users[item.username] = {};
 						}
 						_.extend(instance.users[item.username], item);
+
+						if(_.isUndefined(instance.usersById[item.id])) {
+							instance.usersById[item.id] = {};
+						}
+						_.extend(instance.usersById[item.id], item);
 						if(!_.isUndefined(instance.watchers.user)) {
 							instance.users[item.username] = instance.watchers.user(instance.users[item.username]);
 						}
@@ -785,6 +803,8 @@ function ThroneWars(userId) {
 						instance.bookmarks = item.bookmarks;
 						break;
 					case 'model':
+						//console.log('hit model');
+						//console.log(item);
 						instance.model = item.model;
 						break;
 					case 'map':
